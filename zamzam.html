@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Zamzam</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to top, #c2e9fb, #ffffff);
+      overflow-x: hidden;
+    }
+
+    .container {
+      text-align: center;
+      padding: 50px 20px 20px;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #ff1493;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      color: #444;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: #333;
+    }
+
+    .scene {
+      position: relative;
+      margin-top: 60px;
+      height: 300px;
+      background: linear-gradient(to top, #87ceeb 30%, #c2e9fb 70%);
+      overflow: hidden;
+    }
+
+    .road {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 80px;
+      background: #333;
+      z-index: 1;
+    }
+
+    .road::before {
+      content: '';
+      position: absolute;
+      top: 35px;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: repeating-linear-gradient(90deg, #fff 0 20px, transparent 20px 40px);
+    }
+
+    .trees {
+      position: absolute;
+      bottom: 80px;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      background: url('tree.png') repeat-x;
+      background-size: contain;
+      z-index: 0;
+    }
+
+    .car {
+      position: absolute;
+      bottom: 37px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      z-index: 2;
+    }
+
+    .car img {
+      width: 100%;
+      height: auto;
+      animation: drive 12s infinite linear;
+    }
+
+    @keyframes drive {
+      0% { transform: translateX(-100vw); }
+      100% { transform: translateX(100vw); }
+    }
+
+    /* Fireworks */
+    .firework {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: red;
+      animation: explode 1s ease-out forwards;
+    }
+
+    @keyframes explode {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(10); opacity: 0; }
+    }
+
+    #fireworks-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 5;
+}
+
+  </style>
+</head>
+<body>
+
+  <canvas id="fireworks-canvas"></canvas>
+
+  <div class="container">
+    <h1>Happy Birthday Zamzam!</h1>
+    <h2>Tarehe ya kuzaliwa: 14-May</h2>
+    <p class="message">Tunamtakia ZAMZAM JUMA HAMADI maisha marefu yenye furaha, afya na mafanikio. Furahia siku yako maalum!</p>
+  </div>
+
+  <div class="scene">
+    <div class="trees"></div>
+    <div class="car">
+      <img src="car.png" alt="Lamborghini">
+    </div>
+    <div class="road"></div>
+  </div>
+
+  <script>
+    // Fireworks generator
+    function createFirework() {
+      const firework = document.createElement('div');
+      firework.className = 'firework';
+      firework.style.left = Math.random() * window.innerWidth + 'px';
+      firework.style.top = Math.random() * 300 + 'px';
+      firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      document.body.appendChild(firework);
+
+      setTimeout(() => {
+        firework.remove();
+      }, 1000);
+    }
+
+    setInterval(createFirework, 300);
+  </script>
+
+  <script>
+  const canvas = document.getElementById('fireworks-canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  const particles = [];
+
+  function random(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function createFirework() {
+    const x = random(100, canvas.width - 100);
+    const y = random(50, canvas.height / 2);
+    const color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x,
+        y,
+        radius: 2,
+        angle: Math.random() * 2 * Math.PI,
+        speed: random(2, 6),
+        alpha: 1,
+        decay: random(0.01, 0.02),
+        color
+      });
+    }
+  }
+
+  function updateFireworks() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, i) => {
+      p.x += Math.cos(p.angle) * p.speed;
+      p.y += Math.sin(p.angle) * p.speed;
+      p.alpha -= p.decay;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+      ctx.fillStyle = `rgba(${p.color.match(/\d+/g).join(',')},${p.alpha})`;
+      ctx.fill();
+
+      if (p.alpha <= 0) {
+        particles.splice(i, 1);
+      }
+    });
+
+    requestAnimationFrame(updateFireworks);
+  }
+
+  setInterval(createFirework, 800);
+  updateFireworks();
+</script>
+
+</body>
+</html>
